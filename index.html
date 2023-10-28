@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Canvas Download</title>
+    <style>
+      .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 2px;
+
+        gap: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <label for="charInput"> </label>
+      <input type="text" id="charInput" placeholder="Enter any character" />
+      <button id="generateCanvas">Generate Canvas</button>
+      <canvas id="myCanvas" width="16" height="34"></canvas>
+
+      <a id="downloadLink" download="canvas_data.txt" href="#">Download</a>
+    </div>
+
+    <script>
+      // Function to generate the canvas with the specified character
+      function generateCanvas() {
+        const canvas = document.getElementById("myCanvas");
+        const context = canvas.getContext("2d");
+
+        // Step 3: Set the canvas background color to black
+        context.fillStyle = "black";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+
+        const charInput = document.getElementById("charInput").value;
+        const fontColor = "white"; // Change the font color as desired
+        context.fillStyle = fontColor;
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.font = "16px Arial"; // You can change the font and size
+        context.fillText(charInput, canvas.width / 2, canvas.height / 2);
+      }
+
+      // Attach an event listener to the "Generate Canvas" button
+      const generateButton = document.getElementById("generateCanvas");
+      generateButton.addEventListener("click", generateCanvas);
+
+      // Step 5: Create a download link
+      const downloadLink = document.getElementById("downloadLink");
+      downloadLink.addEventListener("click", () => {
+        // Step 6: Get canvas region pixel color data in hex format
+        const canvas = document.getElementById("myCanvas");
+        const context = canvas.getContext("2d");
+        const imageData = context.getImageData(
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        );
+        const data = imageData.data;
+
+        let hexData = "";
+        for (let i = 0; i < data.length; i += 4) {
+          const red = data[i].toString(16).padStart(2, "0");
+          const green = data[i + 1].toString(16).padStart(2, "0");
+          const blue = data[i + 2].toString(16).padStart(2, "0");
+          hexData += `#${red}${green}${blue}\n`;
+        }
+
+        // Create a Blob and set it as the download link's href
+        const blob = new Blob([hexData], { type: "text/plain" });
+        downloadLink.href = URL.createObjectURL(blob);
+      });
+    </script>
+  </body>
+</html>
